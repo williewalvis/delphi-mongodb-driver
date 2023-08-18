@@ -15,19 +15,45 @@ uses
   Vcl.Forms,
   Vcl.Dialogs,
   Vcl.StdCtrls,
+  Vcl.ComCtrls,
 
   { TEMPLATE INCLUDES }
   Grijjy.MongoDB,
-  Grijjy.MongoDB.Protocol,
   Grijjy.Bson,
+  Grijjy.MongoDB.Protocol,
+  Grijjy.MongoDB.Queries,
+  Grijjy.MongoDB.Compressors,
   MongoDB.Settings;
 
 type
 
   TfrmMongoTemplate = class(TForm)
     btnGetCollection: TButton;
+    lblHeading01: TLabel;
+    grpLoginToAccount: TGroupBox;
+    edtLoginUsername: TEdit;
+    edtLoginPassword: TEdit;
+    lblLoginUsername: TLabel;
+    lblLoginPassword: TLabel;
+    btnLogin: TButton;
+    pgControlAuth: TPageControl;
+    loginForm: TTabSheet;
+    signUpForm: TTabSheet;
+    grpSignUpForAccount: TGroupBox;
+    lblHeading02: TLabel;
+    lblSignUpUsername: TLabel;
+    lblSignUpPassword: TLabel;
+    edtSignUpUsername: TEdit;
+    edtSignUpPassword: TEdit;
+    btnSignUp: TButton;
+    btnSwitchToSignUp: TButton;
+    btnSwitchToLogin: TButton;
     procedure FormCreate(Sender: TObject);
     procedure btnGetCollectionClick(Sender: TObject);
+    procedure btnSwitchToLoginClick(Sender: TObject);
+    procedure switchPage(Page: TTabSheet);
+    procedure btnSwitchToSignUpClick(Sender: TObject);
+    procedure btnLoginClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -43,6 +69,8 @@ var
   Client: IgoMongoClient;
   Database: IgoMongoDatabase;
   Settings: TgoMongoClientSettings;
+
+  { TEMP VARIABLES }
 
 implementation
 
@@ -110,7 +138,7 @@ begin
 
   // create the settings that will be used by the mongodb client
   Settings := TgoMongoClientSettings.Create;
-  Settings.AuthDatabase := CONTROL_DATABASE;
+  Settings.AuthDatabase := AUTH_DATABASE;
 
   // check if auth should be included
   if USE_AUTH then
@@ -133,6 +161,51 @@ begin
 
   // set the main use database from the settings module
   Database := Client.GetDatabase(CONTROL_DATABASE);
+
+end;
+
+procedure TfrmMongoTemplate.btnLoginClick(Sender: TObject);
+
+var
+  Collection: IgoMongoCollection;
+  Doc: TgoBsonDocument;
+
+begin
+
+  // testing data retrieval from MongoDB
+  // also possible to combine filters so that we can do proper user searching
+  Collection := Database.GetCollection('logs');
+  Doc := Collection.FindOne(
+    TgoMongoFilter.Eq('data', 'hello')
+  );
+  ShowMessage(Doc.ToJson);
+
+end;
+
+procedure TfrmMongoTemplate.btnSwitchToLoginClick(Sender: TObject);
+
+begin
+
+  // change to other page on page control
+  switchPage(loginForm);
+
+end;
+
+procedure TfrmMongoTemplate.btnSwitchToSignUpClick(Sender: TObject);
+
+begin
+
+  // change to other page on page control
+  switchPage(signUpForm);
+
+end;
+
+procedure TfrmMongoTemplate.switchPage(Page: TTabSheet);
+
+begin
+
+  // switch page
+  pgControlAuth.ActivePage := Page;
 
 end;
 

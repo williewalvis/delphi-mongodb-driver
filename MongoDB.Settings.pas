@@ -19,7 +19,8 @@ const
   SERVER_PORT = '27017';
   AUTH_USERNAME = 'user';
   AUTH_PASSWORD = 'password';
-  CONTROL_DATABASE = 'admin';
+  AUTH_DATABASE = 'admin';
+  CONTROL_DATABASE = 'database';
   USE_AUTH = True;
 
 implementation
